@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FoodFlow — Smart Inventory Management System
 
-## Getting Started
+> *From pantry to plate — inventory that thinks ahead.*
 
-First, run the development server:
+FoodFlow is a premium restaurant inventory management platform with predictive reordering, expiry rescue suggestions, recipe-to-stock cascade, and margin analytics.
+
+![FoodFlow](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma)
+
+## Features
+
+- **Dashboard** — KPIs, expiry rescue panel, predictive reorder forecast
+- **Inventory** — 30+ ingredients with stock levels, par tracking, status badges
+- **Recipes & Menu** — Live cost/margin per dish with ingredient linkage
+- **Orders** — Supplier directory and purchase order management
+- **Analytics** — Waste trends, category spend, margin radar
+- **Settings** — Restaurant profile, alerts, team roles
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up database
+npm run db:migrate
+npm run db:seed
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — or visit `/login` for the branded sign-in page.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demo Restaurant
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Bella Verde Kitchen** — Italian-inspired, farm-to-table
 
-## Learn More
+- 30 ingredients across 6 categories
+- 5 recipes linked to menu items
+- 3 suppliers with purchase orders
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS 4** with custom FoodFlow design tokens
+- **Prisma 7** + SQLite
+- **Recharts** for analytics
+- **Lucide React** icons
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run db:migrate` | Run database migrations |
+| `npm run db:seed` | Seed demo data |
+| `npm run db:reset` | Reset and re-seed database |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a `.env` file (included by default):
+
+```
+DATABASE_URL="file:./dev.db"
+```
+
+## Design
+
+- **Colors:** Sage green, warm amber, soft cream, coral accents
+- **Fonts:** Fraunces (display) + DM Sans (body)
+- **Motif:** Culinary-tech aesthetic with grain textures and freshness bars
+
+---
+
+Built as a YC demo-day quality restaurant operations platform.

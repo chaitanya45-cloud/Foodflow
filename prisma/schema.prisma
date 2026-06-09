@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  ADMIN
+  CHEF
+  STAFF
+}
+
+enum StockStatus {
+  HEALTHY
+  LOW
+  CRITICAL
+  EXPIRING
+}
+
+enum OrderStatus {
+  DRAFT
+  SENT
+  RECEIVED
+}
+
+model Restaurant {
+  id        String   @id @default(cuid())
+  name      String
+  tagline   String?
+  createdAt DateTime @default(now())
+  users     User[]
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  role         UserRole   @default(STAFF)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  icon        String
+  ingredients Ingredient[]
+}
+
+model Supplier {
+  id              String          @id @default(cuid())
+  name            String
+  contactEmail    String?
+  leadTimeDays    Int             @default(2)
+  ingredients     Ingredient[]
+  purchaseOrders  PurchaseOrder[]
+}
+
+model Ingredient {
+  id           String       @id @default(cuid())
+  name         String
+  sku          String?
+  categoryId   String
+  category     Category     @relation(fields: [categoryId], references: [id])
+  supplierId   String?
+  supplier     Supplier?    @relation(fields: [supplierId], references: [id])
+  unit         String
+  currentStock Float
+  parLevel     Float
+  costPerUnit  Float
+  storageLocation String?
+  expiryDate   DateTime?
+  status       StockStatus  @default(HEALTHY)
+  recipeItems  RecipeIngredient[]
+  orderItems   PurchaseOrderItem[]
+}
+
+model Recipe {
+  id            String             @id @default(cuid())
+  name          String
+  description   String?
+  yield         Int
+  prepTimeMin   Int?
+  costPerPortion Float
+  marginPercent Float
+  menuItem      MenuItem?
+  ingredients   RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id           String     @id @default(cuid())
+  recipeId     String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  quantity     Float
+}
+
+model MenuItem {
+  id          String  @id @default(cuid())
+  name        String
+  price       Float
+  category    String
+  recipeId    String  @unique
+  recipe      Recipe  @relation(fields: [recipeId], references: [id])
+  isActive    Boolean @default(true)
+}
+
+model PurchaseOrder {
+  id         String              @id @default(cuid())
+  orderNumber String             @unique
+  supplierId String
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  status     OrderStatus         @default(DRAFT)
+  totalCost  Float
+  createdAt  DateTime            @default(now())
+  items      PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  ingredientId    String
+  ingredient      Ingredient    @relation(fields: [ingredientId], references: [id])
+  quantity        Float
+  unitCost        Float
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  message   String
+  type      String
+  createdAt DateTime @default(now())
+}
