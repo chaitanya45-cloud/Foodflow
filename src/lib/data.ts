@@ -1,11 +1,29 @@
-import { prisma } from "./prisma";
 import { addDays } from "date-fns";
+import { mockData } from "./mock-data";
+
+/** SQLite doesn't work on Vercel/serverless — use embedded demo data in production. */
+export function shouldUseMockData() {
+  return (
+    process.env.USE_MOCK_DATA === "true" ||
+    process.env.VERCEL === "1" ||
+    process.env.NODE_ENV === "production"
+  );
+}
+
+async function getPrisma() {
+  const { prisma } = await import("./prisma");
+  return prisma;
+}
 
 export async function getRestaurant() {
-  return prisma.restaurant.findFirst();
+  if (shouldUseMockData()) return mockData.getRestaurant();
+  return (await getPrisma()).restaurant.findFirst();
 }
 
 export async function getDashboardStats() {
+  if (shouldUseMockData()) return mockData.getDashboardStats();
+
+  const prisma = await getPrisma();
   const ingredients = await prisma.ingredient.findMany({
     include: { category: true, supplier: true },
   });
@@ -22,20 +40,20 @@ export async function getDashboardStats() {
     return days <= 3 && days >= 0;
   });
 
-  const wasteSavedKg = 12.4;
-  const wasteSavedUsd = 186.5;
-
   return {
     totalValue,
     lowStockCount: lowStock.length,
     expiringCount: expiring.length,
-    wasteSavedKg,
-    wasteSavedUsd,
+    wasteSavedKg: 12.4,
+    wasteSavedUsd: 186.5,
     sustainabilityScore: 87,
   };
 }
 
 export async function getExpiringItems() {
+  if (shouldUseMockData()) return mockData.getExpiringItems();
+
+  const prisma = await getPrisma();
   const now = new Date();
   const threeDays = addDays(now, 3);
 
@@ -63,33 +81,28 @@ export async function getExpiringItems() {
 }
 
 export async function getReorderForecast() {
-  return [
-    { day: "Mon", projected: 4200 },
-    { day: "Tue", projected: 3800 },
-    { day: "Wed", projected: 4100 },
-    { day: "Thu", projected: 5200 },
-    { day: "Fri", projected: 6800 },
-    { day: "Sat", projected: 7200 },
-    { day: "Sun", projected: 5400 },
-  ];
+  return mockData.getReorderForecast();
 }
 
 export async function getRecentActivity() {
-  return prisma.activityLog.findMany({
+  if (shouldUseMockData()) return mockData.getRecentActivity();
+  return (await getPrisma()).activityLog.findMany({
     orderBy: { createdAt: "desc" },
     take: 6,
   });
 }
 
 export async function getIngredients() {
-  return prisma.ingredient.findMany({
+  if (shouldUseMockData()) return mockData.getIngredients();
+  return (await getPrisma()).ingredient.findMany({
     include: { category: true, supplier: true },
     orderBy: { name: "asc" },
   });
 }
 
 export async function getRecipes() {
-  return prisma.recipe.findMany({
+  if (shouldUseMockData()) return mockData.getRecipes();
+  return (await getPrisma()).recipe.findMany({
     include: {
       ingredients: { include: { ingredient: true } },
       menuItem: true,
@@ -99,7 +112,8 @@ export async function getRecipes() {
 }
 
 export async function getSuppliers() {
-  return prisma.supplier.findMany({
+  if (shouldUseMockData()) return mockData.getSuppliers();
+  return (await getPrisma()).supplier.findMany({
     include: {
       _count: { select: { ingredients: true, purchaseOrders: true } },
     },
@@ -107,7 +121,8 @@ export async function getSuppliers() {
 }
 
 export async function getPurchaseOrders() {
-  return prisma.purchaseOrder.findMany({
+  if (shouldUseMockData()) return mockData.getPurchaseOrders();
+  return (await getPrisma()).purchaseOrder.findMany({
     include: {
       supplier: true,
       items: { include: { ingredient: true } },
@@ -117,6 +132,9 @@ export async function getPurchaseOrders() {
 }
 
 export async function getAnalytics() {
+  if (shouldUseMockData()) return mockData.getAnalytics();
+
+  const prisma = await getPrisma();
   const ingredients = await prisma.ingredient.findMany({
     include: { category: true },
   });

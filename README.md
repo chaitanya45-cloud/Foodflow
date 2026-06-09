@@ -67,6 +67,23 @@ Create a `.env` file (included by default):
 DATABASE_URL="file:./dev.db"
 ```
 
+## Deploy to Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **Add New Project**
+2. Import `chaitanya45-cloud/Foodflow` from GitHub
+3. Framework preset: **Next.js** (auto-detected)
+4. Click **Deploy** — no extra env vars needed
+
+> **Note:** SQLite only works locally. On Vercel, the app automatically uses embedded demo data so deployment works out of the box.
+
+For local development with the real database:
+
+```bash
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
 ## Design
 
 - **Colors:** Sage green, warm amber, soft cream, coral accents
